@@ -303,8 +303,7 @@ class DownloaderService
                 $currentUrl = $stats->getEffectiveUri();
             }
         ]);
-
-        if ((string)$currentUrl !== 'https://vueschool.io/') {
+        if ((string)$currentUrl !== 'https://vueschool.io') {
             throw new \RuntimeException('Authorization failed.');
         }
     }
