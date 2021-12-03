@@ -120,7 +120,7 @@ class DownloaderService
                         continue;
                     }
 
-                    $this->downloadFile($a->getAttribute('href'), $coursePath, $fileName);
+                    $this->downloadFile($a->getAttribute('href'), $coursePath, $url);
                     $this->io->newLine();
                 }
             }
