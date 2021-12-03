@@ -102,28 +102,9 @@ class DownloaderService
                 }
 
                 $crawler = new Crawler($response->getBody()->getContents());
-                foreach ($crawler->filter('[aria-labelledby="downloadDropdown"] a') as $i => $a) {
+                foreach ($crawler->filter('div.text-blue-darkest div.text-blue-darkest a') as $i => $a) {
                     $url = $a->getAttribute('href');
-                    $fileName = false;
-                    switch ($url) {
-                        case (false !== strpos($url, 'video')):
-                            $fileName = sprintf('%03d', $chaptersCounter) . "-{$name}.mp4";
-                            break;
-                        case (false !== strpos($url, 'script') && !$isScriptDownloaded):
-                            $fileName = "{$titlePath}.pdf";
-                            $isScriptDownloaded = true;
-                            break;
-                        case (false !== strpos($url, 'code') && !$isCodeDownloaded):
-                            $fileName = "{$titlePath}.zip";
-                            $isCodeDownloaded = true;
-                            break;
-                        case (false !== strpos($url, 'script') && $isScriptDownloaded):
-                        case (false !== strpos($url, 'code') && $isCodeDownloaded):
-                            $fileName = null;
-                            break;
-                        default:
-                            $this->io->warning('Unkown Link Type: ' . $url);
-                    }
+                    $fileName = 'false';
 
                     if ($fileName === null) {
                         continue;
