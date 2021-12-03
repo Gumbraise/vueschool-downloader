@@ -102,10 +102,22 @@ class DownloaderService
                 }
 
                 $crawler = new Crawler($response->getBody()->getContents());
+
                 foreach ($crawler->filter('div.text-blue-darkest div.text-blue-darkest > a') as $i => $a) {
                     $url = $a->getAttribute('title');
                     $url_re = preg_replace('/\s+/', '_', $url);
                     $fileName = false;
+
+                    $mdContent = $crawler->filter('div.flex-no-grow');
+                    $content = "# {$mdContent->filter('h1.font-normal')->html()}<br>{$mdContent->filter('div.text')->html()}";
+                    $person = sprintf('%03d', $chaptersCounter) . "-{$name}.md";;
+
+                    if (!file_exists("{$coursePath}/{$person}")) {
+                        file_put_contents("{$coursePath}/{$person}", $content);
+                    } else {
+                        $this->io->writeln("File '{$person}' was already downloaded");
+                        continue;
+                    }
 
                     $fileName = sprintf('%03d', $chaptersCounter) . "-{$name}.mp4";
 
@@ -122,7 +134,6 @@ class DownloaderService
                         $this->io->writeln("File '{$fileName}' was already downloaded");
                         continue;
                     }
-
 
                     $this->downloadFile($a->getAttribute('href'), $coursePath, $fileName);
                     $this->io->newLine();
