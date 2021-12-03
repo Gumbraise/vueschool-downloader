@@ -228,7 +228,7 @@ class DownloaderService
 
         $courses = [];
         $crawler = new Crawler($response->getBody()->getContents());
-        $elements = $crawler->filter('div.w-full.px-4.mb-8.md:w-1/2.xl:w-1/3 > a');
+        $elements = $crawler->filter('div.w-full.px-4.mb-8 > a');
 
         $progressBar = $this->io->createProgressBar($elements->count());
         $progressBar->setFormat('<info>[%bar%]</info> %message%');
