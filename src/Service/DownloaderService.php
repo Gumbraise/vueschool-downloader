@@ -275,10 +275,25 @@ class DownloaderService
      */
     private function login(): void
     {
+        $response = $this->client->get('login');
+
+        $csrfToken = '';
+        $crawler = new Crawler($response->getBody()->getContents());
+        foreach ($crawler->filter('meta') as $input) {
+            if ($input->getAttribute('name') === 'csrf-token') {
+                $csrfToken = $input->getAttribute('content');
+                echo $csrfToken;
+            }
+        }
+
+        if (empty($csrfToken)) {
+            throw new \RuntimeException('Unable to authenticate');
+        }
+
         $currentUrl = null;
         $this->client->post('login', [
             'headers' => [
-                'X-CSRF-TOKEN' => 'DItor1ZvelgQPitUEmutTXLLaB3lAOVGPPZ34fXZ',
+                'X-CSRF-TOKEN' => $csrfToken,
             ],
             'form_params' => [
                 'email' => $this->configs['EMAIL'],
