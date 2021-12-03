@@ -70,8 +70,9 @@ class DownloaderService
             }
 
             $titlePath = str_replace(self::BAD_WINDOWS_PATH_CHARS, '-', $title);
-            $coursePath = "{$downloadPath}/{$titlePath}";
-
+            $journalName = preg_replace('/\s+/', '_', $titlePath);
+            $coursePath = "{$downloadPath}/{$journalName}";
+            echo $coursePath;
             if (!is_dir($coursePath) && !mkdir($coursePath) && !is_dir($coursePath)) {
                 $this->io->error('Unable to create course directory');
 
