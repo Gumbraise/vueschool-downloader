@@ -72,7 +72,7 @@ class DownloaderService
             $titlePath = str_replace(self::BAD_WINDOWS_PATH_CHARS, '-', $title);
             $journalName = preg_replace('/\s+/', '_', $titlePath);
             $coursePath = "{$downloadPath}/{$journalName}";
-            echo $coursePath;
+
             if (!is_dir($coursePath) && !mkdir($coursePath) && !is_dir($coursePath)) {
                 $this->io->error('Unable to create course directory');
 
@@ -102,9 +102,12 @@ class DownloaderService
                 }
 
                 $crawler = new Crawler($response->getBody()->getContents());
-                foreach ($crawler->filter('div.text-blue-darkest div.text-blue-darkest a') as $i => $a) {
-                    $url = $a->getAttribute('href');
-                    $fileName = 'false';
+                foreach ($crawler->filter('div.text-blue-darkest div.text-blue-darkest > a') as $i => $a) {
+                    $url = $a->getAttribute('title');
+                    $url_re = preg_replace('/\s+/', '_', $url);
+                    $fileName = false;
+
+                    $fileName = sprintf('%03d', $chaptersCounter) . "-{$name}.mp4";
 
                     if ($fileName === null) {
                         continue;
@@ -120,7 +123,8 @@ class DownloaderService
                         continue;
                     }
 
-                    $this->downloadFile($a->getAttribute('href'), $coursePath, $url);
+
+                    $this->downloadFile($a->getAttribute('href'), $coursePath, $fileName);
                     $this->io->newLine();
                 }
             }
@@ -141,12 +145,10 @@ class DownloaderService
         $io = $this->io;
         $progressBar = null;
         $file = "{$filePath}/{$fileName}";
-
         try {
             $this->client->get($url, [
                 'save_to' => $file,
                 'allow_redirects' => ['max' => 2],
-                'auth' => ['username', 'password'],
                 'progress' => function ($total, $downloaded) use ($io, $fileName, &$progressBar) {
                     if ($total && $progressBar === null) {
                         $progressBar = $io->createProgressBar($total);
@@ -264,7 +266,6 @@ class DownloaderService
         foreach ($crawler->filter('meta') as $input) {
             if ($input->getAttribute('name') === 'csrf-token') {
                 $csrfToken = $input->getAttribute('content');
-                echo $csrfToken;
             }
         }
 
